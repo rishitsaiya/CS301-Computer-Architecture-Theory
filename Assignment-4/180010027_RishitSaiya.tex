@@ -1,0 +1,49 @@
+\title{Computer Architecture - CS 301} % You may change the title if you want.
+
+\author{Rishit Saiya - 180010027, Assignment - 4}
+
+\date{\today}
+
+\documentclass[12pt]{article}
+\usepackage{fullpage}
+\usepackage{enumitem}
+\usepackage{amsmath,mathtools}
+\usepackage{amssymb}
+\usepackage[super]{nth}
+\usepackage{textcomp}
+\usepackage{hyperref}
+\begin{document}
+\maketitle
+
+%----------------------------------------------------------------
+
+\section{}
+If we freeze one machine, copy all the state (memory, register file, PC, flags register) to another machine, it depends if both machines give results or not.
+
+An ISA describes the design of Architecture of a computer going intricately till the basic operations being supported. It is distinguished from a micro architecture, which is a set of processor design techniques used, in a particular processor to implement Instruction Set. Processors with different can share a common Instruction Set. 
+
+So, what we mostly care about is the set or collection of basic operations to be supported in similar fashions in both systems. So, if the second machine have different design but same ISA, then maybe output of 2 machines will be same but performance might differ.
+
+The ISA defines various types of instructions supported by the processor, maximum length of each type of instruction and the Instruction Format. So, if the second machine has a different ISA, then the result is less likely to be same for both the machines, there is more chance that the instructions will not be recognised by the machines. So generalising the statement isn't possible and depends upon the compatibility of the ISA's as well.
+
+%----------------------------------------------------------------
+
+\section{}
+The maximum number of activation blocks would be \textbf{\textit{5}} (including main()). 
+
+When the foo(5) is called, in the recursion it calls foo(4) \& foo(3). So the activation length becomes 4 (main(), foo(5), foo(4), foo(3)). The next recursion step would include foo(2) \& foo(1) which doesn't require an activation block because it is just a condition loop. \\
+
+\textbf{\textit{Ascending Stack order during iterations:}} \\
+\begin{itemize}
+    \item main
+    \item main $\rightarrow$ foo(5)
+    \item main $\rightarrow$ foo(5) $\rightarrow$ foo(4)
+    \item main $\rightarrow$ foo(5) $\rightarrow$ foo(4) $\rightarrow$ foo(3)
+    \item main $\rightarrow$ foo(5) $\rightarrow$ foo(4) $\rightarrow$ foo(3) $\rightarrow$ foo(2)
+    \item main $\rightarrow$ foo(5) $\rightarrow$ foo(4) $\rightarrow$ foo(3) $\rightarrow$ foo(1) 
+\end{itemize}
+
+The remaining steps are backwards and recursive values are used.
+%----------------------------------------------------------------
+
+\end{document}

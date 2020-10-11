@@ -1,0 +1,62 @@
+\title{Computer Architecture - CS 301} % You may change the title if you want.
+
+\author{Rishit Saiya - 180010027, Assignment - 2 }
+
+\date{\today}
+
+\documentclass[12pt]{article}
+\usepackage{fullpage}
+\usepackage{enumitem}
+\usepackage{amsmath,mathtools}
+\usepackage{amssymb}
+\usepackage[super]{nth}
+\usepackage{textcomp}
+\usepackage{hyperref}
+\begin{document}
+\maketitle
+
+%----------------------------------------------------------------
+\section{}
+There is a limit of load registers and so we use Modifiers here. So, using Modifiers gives us facility to store 32 bit number/immediate into the register. The whole idea of using the modifiers is to redistribute the whole chunk of instructions and calculations and break them in order to store them in the registers. \\
+
+Some characters are added to the instructions to modify and them make new instructor to work as a Modifier.\\
+
+\textbf{\textit{Example:}} \textbf{\textit{u}} is added to an instruction which makes it unsigned, which further implies that all the signed bits have to be 0. \textbf{\textit{h}} is added to an instruction which makes a 16-bit shift to the left. \\
+
+
+
+
+\textbf{\textit{Goal:}} Set r1 $\leftarrow$ 0x12345678 \\
+
+The following Assembly code with the help of modifiers helps us to achieve the required: \\
+\begin{verbatim}
+    movh r1, 0x 12 34       @   (12 34 00 00)
+    addu r1, 0x 56 78       @ + (00 00 56 78)
+\end{verbatim}
+\textbf{movh} instruction stores 12 34 in first 16 bits \& assigns the last 16 bits as 0. \textbf{addu} instruction makes all the usigned bits at 0 and adds to the 12 34 00 00 immediate.
+
+%----------------------------------------------------------------
+
+\section{}
+The \textbf{\textit{cmp}} instruction is used, this calls the flag registers.
+The flag registers contains the result of the last comparison. So, they become useful to create loops in the assembly code and help in conditional branched instructions. \\
+
+Consider an example where r1 $>$ r2, then save 2 in r3, else 3 in r3.
+
+\begin{verbatim}
+    cmp r1, r2          @ Comparing r1 & r2 using bgt flag(branch greater than)
+    bgt .foo            @ If r1 > r2, then go to foo branch
+    mov r3, 3           @ Else r3 <- 3
+    ...
+    ...
+    foo:
+        mov r3, 2       @ Set r3 <- 2 
+\end{verbatim}
+
+By the definition, if r1 $>$ r2, flag.GT = 1, flag.E = 0. If r1 $<$ r2, flag.GT = 0, flag.E = 0. If r1 $==$ r2, flag.GT = 0, flag.E = 1. These are saved until next call and change according to further calls. \\
+
+In case of branching, \textbf{\textit{beq}} \& \textbf{\textit{bgt}} instructions use flags registers. \textbf{\textit{beq}}: branch if flag.E = 1 \& \textbf{\textit{bgt}}: branch if flag.GT = 1.
+We can't remove them because without them, the branching \& looping sequence generation will not be possible.
+%----------------------------------------------------------------
+
+\end{document}

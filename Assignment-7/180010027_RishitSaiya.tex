@@ -1,0 +1,170 @@
+\title{Computer Architecture - CS 301} % You may change the title if you want.
+
+\author{Rishit Saiya - 180010027, Assignment - 7}
+
+\date{\today}
+
+\documentclass[12pt]{article}
+\usepackage{fullpage}
+\usepackage{enumitem}
+\usepackage{amsmath,mathtools}
+\usepackage{amssymb}
+\usepackage[super]{nth}
+\usepackage{textcomp}
+\usepackage{hyperref}
+\begin{document}
+\maketitle
+
+%----------------------------------------------------------------
+\section{}
+
+Hazards in general inculcate when there the instruction is about to have a conflict while fetching correct value in the EX stage. 
+Interlocking is the hardware mechanism to enforce correctness in the pipeline. There are two kinds of Interlocks: \\
+\begin{itemize}
+    \item \textbf{Data Lock:} Here we don’t allow a consumer instruction to move beyond OF stage till it has read the correct values, i.e., stall the IF and OF stages. It is in general used for data hazards.
+    \item \textbf{Branch Lock:} Here, we don’t execute instructions in the wrong path. It is in general used for control hazards.
+\end{itemize}
+
+
+When the branch is taken there, we convert the instructions in IF \& OF stage to bubbles. We know that an instruction is a branch instruction in the OF stage. This ensures the branch-lock condition.
+
+We can do it by following the below algorithm steps: \\
+
+\begin{verbatim}
+    if (Branch Instruction in EX stage is taken){
+        Invalidate the instructions in IF & OF stages;
+        Fetch values from Branch Target;
+    }
+    else {
+        continue;
+    }
+    
+\end{verbatim}
+
+As a demonstration, let's consider the example as given in video:
+\begin{verbatim}
+   [1] beq .foo_buff
+   [2] add r1, r2, r3
+   [3] add r4, r5, r6
+    .
+    .
+    .
+       .foo_buff
+   [4] add r7, r8, r9
+\end{verbatim}
+
+The Figure 1 shows the Pipeline view of the above set of instructions. The compiler interprets uses the above algorithm and checks that if the branch instruction is taken, which is taken in this case. It then makes those Instructions [2], [3] which were in IF \& OF stages bubbled and makes sure that they are not executed further. \\
+
+\begin{table}[]
+    \begin{center}
+\begin{tabular}{|c|cccc|ccll}
+\hline
+\multicolumn{1}{|l|}{} & \multicolumn{1}{c|}{1}          & \multicolumn{1}{c|}{\textbf{2}} & \multicolumn{1}{c|}{\textbf{3}} & \textbf{4}                      & \multicolumn{1}{c|}{\textbf{5}} & \multicolumn{1}{c|}{\textbf{6}} & \multicolumn{1}{c|}{\textbf{7}} & \multicolumn{1}{c|}{\textbf{8}} \\ \hline
+\textbf{IF}            & \multicolumn{1}{c|}{\textbf{1}} & \multicolumn{1}{c|}{\textbf{2}} & \multicolumn{1}{c|}{\textbf{3}} & \multicolumn{1}{l|}{\textbf{4}} & \multicolumn{1}{l}{}            & \multicolumn{1}{l}{}            &                                 &                                 \\ \cline{1-6}
+\textbf{OF}            & \multicolumn{1}{c|}{}           & \multicolumn{1}{c|}{\textbf{1}} & \multicolumn{1}{c|}{\textbf{2}} & \textbf{B}                      & \multicolumn{1}{c|}{\textbf{4}} & \textbf{}                       &                                 &                                 \\ \cline{1-1} \cline{3-7}
+\textbf{EX}            &                                 & \multicolumn{1}{c|}{}           & \multicolumn{1}{c|}{\textbf{1}} & \textbf{B}                      & \multicolumn{1}{c|}{\textbf{B}} & \multicolumn{1}{c|}{\textbf{4}} &                                 &                                 \\ \cline{1-1} \cline{4-8}
+\textbf{MA}            &                                 &                                 & \multicolumn{1}{c|}{}           & \textbf{1}                      & \multicolumn{1}{c|}{\textbf{B}} & \multicolumn{1}{c|}{\textbf{B}} & \multicolumn{1}{c|}{\textbf{2}} &                                 \\ \cline{1-1} \cline{5-9} 
+\textbf{RW}            &                                 &                                 &                                 & \multicolumn{1}{l|}{}           & \multicolumn{1}{c|}{\textbf{1}} & \multicolumn{1}{c|}{\textbf{B}} & \multicolumn{1}{l|}{\textbf{B}} & \multicolumn{1}{c|}{\textbf{2}} \\ \cline{1-1} \cline{6-9} 
+\end{tabular}
+    \end{center}
+    \caption{Pipeline View}
+\end{table}
+
+\textbf{\textit{Minimum number of Bubbles:}} \\
+
+If the branch is taken, and all the other instructions in IF and OF stages belonging to the same cycle that doesn't belong to this branch, in that case, the minimum number of bubbles will be \textbf{2} as shown in the above example. 
+
+But if the branch isn't taken, and all the other instructions in IF
+and OF stages belonging to the same cycle does not belong to this branch, in that case, the minimum number of bubbles will be \textbf{0}.
+
+
+A case where the branch is taken but all the other instructions in IF and OF
+stages belonging to the same cycle belong to this branch, in that case the minimum no. of bubbles will be \textbf{0}.
+
+So, the minimum no. of bubbles in this case would be 0.
+
+\begin{table}[]
+    \begin{center}
+        
+\begin{tabular}{|c|cccc|ccll}
+\hline
+\multicolumn{1}{|l|}{} & \multicolumn{1}{c|}{1}          & \multicolumn{1}{c|}{\textbf{2}} & \multicolumn{1}{c|}{\textbf{3}} & \textbf{4}                      & \multicolumn{1}{c|}{\textbf{5}} & \multicolumn{1}{c|}{\textbf{6}} & \multicolumn{1}{c|}{\textbf{7}} & \multicolumn{1}{c|}{\textbf{8}} \\ \hline
+\textbf{IF}            & \multicolumn{1}{c|}{\textbf{1}} & \multicolumn{1}{c|}{\textbf{2}} & \multicolumn{1}{c|}{\textbf{3}} & \multicolumn{1}{l|}{\textbf{4}} & \multicolumn{1}{l}{}            & \multicolumn{1}{l}{}            &                                 &                                 \\ \cline{1-6}
+\textbf{OF}            & \multicolumn{1}{c|}{}           & \multicolumn{1}{c|}{\textbf{1}} & \multicolumn{1}{c|}{\textbf{2}} & \textbf{3}                      & \multicolumn{1}{c|}{\textbf{4}} & \textbf{}                       &                                 &                                 \\ \cline{1-1} \cline{3-7}
+\textbf{EX}            &                                 & \multicolumn{1}{c|}{}           & \multicolumn{1}{c|}{\textbf{1}} & \textbf{2}                      & \multicolumn{1}{c|}{\textbf{3}} & \multicolumn{1}{c|}{\textbf{4}} &                                 &                                 \\ \cline{1-1} \cline{4-8}
+\textbf{MA}            &                                 &                                 & \multicolumn{1}{c|}{}           & \textbf{1}                      & \multicolumn{1}{c|}{\textbf{2}} & \multicolumn{1}{c|}{\textbf{3}} & \multicolumn{1}{c|}{\textbf{4}} &                                 \\ \cline{1-1} \cline{5-9} 
+\textbf{RW}            &                                 &                                 &                                 & \multicolumn{1}{l|}{}           & \multicolumn{1}{c|}{\textbf{1}} & \multicolumn{1}{c|}{\textbf{2}} & \multicolumn{1}{c|}{\textbf{3}} & \multicolumn{1}{c|}{\textbf{4}} \\ \cline{1-1} \cline{6-9} 
+\end{tabular}
+    \end{center}
+    \caption{Example for Q.3}
+\end{table}
+%----------------------------------------------------------------
+\section{}
+Yes, we can  reduce the performance impact introduced through interlocking-based handling of control hazards by Predict-Not-Taken Method. This algorithm/method involves Branch-Look in the following steps:
+\begin{verbatim}
+    if (Branch Instruction in EX stage is taken){
+        Invalidate the instructions in IF & OF stages;
+        Fetch values from Branch Target;
+    }
+    else {
+        continue;
+    }
+\end{verbatim}
+This has proven to be more efficient than the Normal-Branch-Lock Method.
+%----------------------------------------------------------------
+\section{}
+
+In the Figure 2, in the 5th cycle, Instruction [4] (whose source operand is r5) needs the value of register r5 and Instruction [1] \& Instruction [2]  (which are in MA \& RW stages respectively) write the value of r5. 
+
+Now, we wait for another cycle to process and then execute the 2 stage forwarding from RW to EX stage because Instruction [4] will need the value
+of r5 in EX stage.
+
+It is assumed that WAW hazard is already taken care of in the previous cycles.
+%----------------------------------------------------------------
+\section{}
+The general expression to calculate Performance is as follows:
+\begin{equation*}
+    Performance = \frac{Frequency}{CPI}
+\end{equation*}
+or
+\begin{equation*}
+    Performance = \frac{Frequency}{CPI_{ideal} + (Penalty_{stall} \times Rate_{stall})}
+\end{equation*}
+where CPI is the Cycle per Instruction. \\
+
+Let us say that Performance of Processor P1 is $P_1$ and that of Processor P2 is $P_2$. Similarly, let their frequencies be $f_1$ \& $f_2$ respectively. \\
+
+Conditional Instructions are given as 30\% of Total Instructions \& Branches not taken are 80\% of Conditional Instructions. 
+So, 
+\begin{equation*}
+    Penalty_{stall} = (Branch \, Instruction \, Fraction) \times (Branches \, Taken \, Fraction)
+\end{equation*}
+\begin{equation*}
+    Penalty_{stall} = 0.3 \times (1-0.8)
+\end{equation*}
+\begin{equation*}
+    Penalty_{stall} = 0.06
+\end{equation*}
+
+Given that $CPI_{ideal}$ for $P_1$ \& $P_2$ is 1. It is also given that $f_1$ \& $f_2$ are 1 GHz \& 1.2 GHz respectively. $Penalty_{stall}$ for $P_1$ \& $P_2$ are 2 cycles \& 3 cycles respectively. \\
+ 
+Since there are no data hazards in the program, we calculate each performance as follows:
+For Processor P1:
+\begin{equation*}
+    P_1 = \frac{1 \, GHz}{1 + 2 \times (0.3 \times 0.2)}
+\end{equation*}
+\begin{equation*}
+    P_1 \approx 0.892857
+\end{equation*}
+For Processor P2:
+\begin{equation*}
+    P_2 = \frac{1.2 \, GHz}{1 + 3 \times (0.3 \times 0.2)}
+\end{equation*}
+\begin{equation*}
+    P_2 \approx 1.0169491
+\end{equation*}
+
+Clearly, Processor 2 performs better than Processor 1.
+
+%----------------------------------------------------------------
+\end{document}

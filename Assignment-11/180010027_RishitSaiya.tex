@@ -1,0 +1,719 @@
+\title{Computer Architecture - CS 301} % You may change the title if you want.
+
+\author{Rishit Saiya - 180010027, Assignment - 11}
+
+\date{\today}
+
+\documentclass[12pt]{article}
+\usepackage{fullpage}
+\usepackage{enumitem}
+\usepackage{amsmath,mathtools}
+\usepackage{amssymb}
+\usepackage[super]{nth}
+\usepackage{textcomp}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+}
+\begin{document}
+\maketitle
+
+%----------------------------------------------------------------
+
+\section{}
+In the Direct-Mapped Cache, we first try to find all the dependencies of variables and then check the cache.
+
+We are given byte-addressable, direct-mapped cache of size 1 KB. So, that translates as follows:
+\begin{equation*}
+    Cache \, Size = 2^{10} \, bytes
+\end{equation*}
+Next, we are given information about Line Size (64 bytes) as follows:
+\begin{equation*}
+    Line \, Size = 2^6 \, bytes
+\end{equation*}
+We know that Number of Address bits is 16. Now, to calculate the number of bits assigned to Index bits we do as follows:
+\begin{equation*}
+    Index = \frac{Blocks}{Cache \, Line}
+\end{equation*}
+or,
+\begin{equation*}
+    Index \, Bits = \frac{2^{10}}{2^6} = 2^4 = 16
+\end{equation*}
+	So, Index will be of 4 bits.
+	
+So, finally tag bits become as follows:
+\begin{equation*}
+    Tag Bits = Address \, Bits - Index \, Bits - Offset
+\end{equation*}
+or,
+\begin{equation*}
+    Tag \, Bits = 16 - 4 - 6 = 6
+\end{equation*}
+
+We are the following sequence of accesses (16 bit addresses in hexadecimal format): \\ 
+0x0001, 0x0002, 0x0003, 0x0041, 0x0081, 0x00A1, 0x00C1, 0x0401, 0x0402, 0x0001, 0x0002, 0x0003.
+
+Table 1 shows the iterations on how the Cache is being filled in each value entered in iteration.
+
+\begin{table}[]
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\textbf{Address} & \textbf{Binary}     & \textbf{Tag Bits} & \textbf{\begin{tabular}[c]{@{}c@{}}Tag Field\\ (Index Bits)\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Tag Field\\ (Bits)\end{tabular}} & \textbf{Hit/Miss} \\ \hline
+0x0001           & 0000 0000 0000 0001 & 000000            & 0000                                                                      & 000000                                                              & Miss              \\ \hline
+0x0002           & 0000 0000 0000 0010 & 000000            & 0000                                                                      & 000000                                                              & Hit               \\ \hline
+0x0003           & 0000 0000 0000 0011 & 000000            & 0000                                                                      & 000000                                                              & Hit               \\ \hline
+0x0041           & 0000 0000 0100 0001 & 000000            & 0001                                                                      & 000000                                                              & Miss              \\ \hline
+0x0081           & 0000 0000 1000 0001 & 000000            & 0010                                                                      & 000000                                                              & Miss              \\ \hline
+0x00A1           & 0000 0000 1010 0001 & 000000            & 0010                                                                      & 000000                                                              & Hit               \\ \hline
+0x00C1           & 0000 0000 1100 0001 & 000000            & 0011                                                                      & 000000                                                              & Miss              \\ \hline
+0x0401           & 0000 0100 0000 0001 & 000001            & 0000                                                                      & 000001                                                              & Miss              \\ \hline
+0x0402           & 0000 0000 1000 0001 & 000001            & 0000                                                                      & 000001                                                              & Hit               \\ \hline
+0x0001           & 0000 0000 0000 0001 & 000000            & 0000                                                                      & 000000                                                              & Miss              \\ \hline
+0x0002           & 0000 0000 0000 0010 & 000000            & 0000                                                                      & 000000                                                              & Hit               \\ \hline
+0x0003           & 0000 0000 0000 0011 & 000000            & 0000                                                                      & 000000                                                              & Hit               \\ \hline
+\end{tabular}
+\caption{Direct Mapped Cache}
+\end{center}
+\end{table}
+
+The details in each iterations are done with the considerations like the cache was empty before the $1^{st}$ iteration. We see that there were \textbf{6 Cache Hits} and \textbf{6 Cache Miss} after 12 iterations.
+%----------------------------------------------------------------
+\section{}
+
+In the 2-way Associative Cache, we first try to find all the dependencies of variables and then check the cache.
+
+We are given byte-addressable, direct-mapped cache of size 1 KB. So, that translates as follows:
+\begin{equation*}
+    Cache \, Size = 2^{10} \, bytes
+\end{equation*}
+Next, we are given information about Line Size (64 bytes) as follows:
+\begin{equation*}
+    Line \, Size = 2^6 \, bytes
+\end{equation*}
+Number of Address bits is 16. Given that number of cache blocks per set is 2, we calculate the number of sets in the cache as follows:
+\begin{equation*}
+    Index = \frac{Blocks}{Cache \, Line \times cache \, blocks}
+\end{equation*}
+or,
+\begin{equation*}
+    Index \, Bits = \frac{2^{10}}{2^6 \times 2} = 2^3 = 8
+\end{equation*}
+So, Index will be of 3 bits.
+	
+So, finally tag bits become as follows:
+\begin{equation*}
+    Tag Bits = Address \, Bits - Index \, Bits - Offset
+\end{equation*}
+or,
+\begin{equation*}
+    Tag \, Bits = 16 - 3 - 6 = 7
+\end{equation*}
+
+We are the following sequence of accesses (16 bit addresses in hexadecimal format): \\ 
+0x0001, 0x0002, 0x0003, 0x0041, 0x0081, 0x00A1, 0x00C1, 0x0401, 0x0402, 0x0001, 0x0002, 0x0003.
+
+Table 2 shows the iterations on how the Cache is being filled in each value entered in iteration.
+
+\begin{table}[]
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\textbf{Address} & \textbf{Binary}     & \textbf{Tag Bits} & \textbf{\begin{tabular}[c]{@{}c@{}}Tag Field\\ (Index Bits)\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Tag Field\\ (Bits)\end{tabular}} & \textbf{Hit/Miss} \\ \hline
+0x0001           & 0000 0000 0000 0001 & 0000000           & 000                                                                       & 0000000                                                             & Miss              \\ \hline
+0x0002           & 0000 0000 0000 0010 & 0000000           & 000                                                                       & 0000000                                                             & Hit               \\ \hline
+0x0003           & 0000 0000 0000 0011 & 0000000           & 000                                                                       & 0000000                                                             & Hit               \\ \hline
+0x0041           & 0000 0000 0100 0001 & 0000000           & 001                                                                       & 0000000                                                             & Miss              \\ \hline
+0x0081           & 0000 0000 1000 0001 & 0000000           & 010                                                                       & 0000000                                                             & Miss              \\ \hline
+0x00A1           & 0000 0000 1010 0001 & 0000000           & 010                                                                       & 0000000                                                             & Hit               \\ \hline
+0x00C1           & 0000 0000 1100 0001 & 0000000           & 011                                                                       & 0000000                                                             & Miss              \\ \hline
+0x0401           & 0000 0100 0000 0001 & 0000010           & 000                                                                       & 0000001                                                             & Miss              \\ \hline
+0x0402           & 0000 0000 1000 0001 & 0000010           & 000                                                                       & 0000001                                                             & Hit               \\ \hline
+0x0001           & 0000 0000 0000 0001 & 0000000           & 000                                                                       & 0000000                                                             & Hit               \\ \hline
+0x0002           & 0000 0000 0000 0010 & 0000000           & 000                                                                       & 0000000                                                             & Hit               \\ \hline
+0x0003           & 0000 0000 0000 0011 & 0000000           & 000                                                                       & 0000000                                                             & Hit               \\ \hline
+\end{tabular}
+\caption{2-way Associative Cache}
+\end{center}
+\end{table}
+
+The details in each iterations are done with the considerations like the cache was empty before the $1^{st}$ iteration. We see that there were \textbf{7 Cache Hits} and \textbf{5 Cache Miss} after 12 iterations.
+%----------------------------------------------------------------
+\section{}
+
+In the 4-way Associative Cache, we first try to find all the dependencies of variables and then check the cache.
+
+We are given byte-addressable, direct-mapped cache of size 128 B. So, that translates as follows:
+\begin{equation*}
+    Cache \, Size = 2^{7} \, bytes
+\end{equation*}
+Next, we are given information about Line Size (16 bytes) as follows:
+\begin{equation*}
+    Line \, Size = 2^4 \, bytes
+\end{equation*}
+Let the number of address bits be 8. Offset will be of 4 bits then. Given that number of cache blocks per set is 4, we calculate the number of sets in the cache as follows:
+\begin{equation*}
+    Index = \frac{Blocks}{Cache \, Line \times cache \, blocks}
+\end{equation*}
+or,
+\begin{equation*}
+    Index \, Bits = \frac{2^{7}}{2^4 \times 4} = 2^3 = 2
+\end{equation*}
+So, Index will be of 1 bits.
+	
+So, finally tag bits become as follows:
+\begin{equation*}
+    Tag Bits = Address \, Bits - Index \, Bits - Offset
+\end{equation*}
+or,
+\begin{equation*}
+    Tag \, Bits = 8 - 1 - 4 = 3
+\end{equation*}
+
+\subsection{LRU performing better than LFU}
+Table 3 shows where LRU is used as Replacement Policy.
+
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|c|c|} 
+\hline
+\begin{tabular}[c]{@{}c@{}}\textbf{Address}\\\textbf{(Binary)}~\end{tabular} & \textbf{Tag Value} & \begin{tabular}[c]{@{}c@{}}\textbf{Set Index}\\\textbf{Bit}~\end{tabular} & \textbf{Set Entry Bit} & \textbf{Hit/Miss}   \\ 
+\hline
+10010011                                                                     & 4                  & 1                                                                         & 0                      & Miss                \\ 
+\hline
+10010010                                                                     & 4                  & 1                                                                         & 0                      & Hit                 \\ 
+\hline
+10010111                                                                     & 4                  & 1                                                                         & 0                      & Hit                 \\ 
+\hline
+10010101                                                                     & 4                  & 1                                                                         & 0                      & Hit                 \\ 
+\hline
+10110001                                                                     & 5                  & 1                                                                         & 1                      & Miss                \\ 
+\hline
+01010000                                                                     & 2                  & 1                                                                         & 2                      & Miss                \\ 
+\hline
+01011000                                                                     & 2                  & 1                                                                         & 2                      & Hit                 \\ 
+\hline
+01110101                                                                     & 3                  & 1                                                                         & 3                      & Miss                \\ 
+\hline
+10110011                                                                     & 5                  & 1                                                                         & 2                      & Hit                 \\ 
+\hline
+11010011                                                                     & 6                  & 1                                                                         & 0                      & Miss                \\
+\hline
+01110011                                                                     & 3                  & 1                                                                         & 3                      & Hit                 \\
+\hline
+\end{tabular}
+\caption{LRU Replacement Policy}
+\end{table}
+
+Table 4 shows where LFU is used as Replacement Policy.
+
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|c|c|} 
+\hline
+\begin{tabular}[c]{@{}c@{}}\textbf{Address}\\\textbf{(Binary)}~\end{tabular} & \textbf{Tag Value} & \begin{tabular}[c]{@{}c@{}}\textbf{Set Index}\\\textbf{Bit}~\end{tabular} & \textbf{Set Entry Bit} & \textbf{Hit/Miss}   \\ 
+\hline
+10010011                                                                     & 4                  & 1                                                                         & 0                      & Miss                \\ 
+\hline
+10010010                                                                     & 4                  & 1                                                                         & 0                      & Hit                 \\ 
+\hline
+10010111                                                                     & 4                  & 1                                                                         & 0                      & Hit                 \\ 
+\hline
+10010101                                                                     & 4                  & 1                                                                         & 0                      & Hit                 \\ 
+\hline
+10110001                                                                     & 5                  & 1                                                                         & 1                      & Miss                \\ 
+\hline
+01010000                                                                     & 2                  & 1                                                                         & 2                      & Miss                \\ 
+\hline
+01011000                                                                     & 2                  & 1                                                                         & 2                      & Hit                 \\ 
+\hline
+01110101                                                                     & 3                  & 1                                                                         & 3                      & Miss                \\ 
+\hline
+10110011                                                                     & 5                  & 1                                                                         & 2                      & Hit                 \\ 
+\hline
+11010011                                                                     & 6                  & 1                                                                         & 3                      & Miss                \\
+\hline
+01110011                                                                     & 3                  & 1                                                                         & 3                      & Miss                 \\
+\hline
+\end{tabular}
+\caption{LFU Replacement Policy}
+\end{table}
+
+
+From Table 3 and Table 4 we can see that there are \textbf{6 hits} out of 11 cases \& \textbf{5 hits} out of 11 cases for LRU \& LFU respectively. So, LRU performs better than LFU.
+
+\subsection{LFU performing better than LRU}
+Table 5 shows where LRU is used as Replacement Policy.
+
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|c|c|} 
+\hline
+\begin{tabular}[c]{@{}c@{}}\textbf{Address}\\\textbf{(Binary)}~\end{tabular} & \textbf{Tag Value} & \begin{tabular}[c]{@{}c@{}}\textbf{Set Index}\\\textbf{Bit}~\end{tabular} & \textbf{Set Entry Bit} & \textbf{Hit/Miss}   \\ 
+\hline
+10010011                                                                     & 4                  & 1                                                                         & 0                      & Miss                \\ 
+\hline
+10010010                                                                     & 4                  & 1                                                                         & 0                      & Hit                 \\ 
+\hline
+10010111                                                                     & 4                  & 1                                                                         & 0                      & Hit                 \\ 
+\hline
+10010101                                                                     & 4                  & 1                                                                         & 0                      & Hit                 \\ 
+\hline
+01110001                                                                     & 3                  & 1                                                                         & 1                      & Miss                \\ 
+\hline
+10110000                                                                     & 5                  & 1                                                                         & 2                      & Miss                \\ 
+\hline
+01011000                                                                     & 2                  & 1                                                                         & 2                      & Miss                \\ 
+\hline
+01010101                                                                     & 2                  & 1                                                                         & 3                      & Hit                 \\ 
+\hline
+10110011                                                                     & 5                  & 1                                                                         & 2                      & Hit                 \\ 
+\hline
+01110011                                                                     & 6                  & 1                                                                         & 0                      & Miss                \\ 
+\hline
+10010101                                                                     & 4                  & 1                                                                         & 1                      & Miss                \\
+\hline
+\end{tabular}
+\caption{LRU Replacement Policy}
+\end{table}
+
+Table 6 shows where LFU is used as Replacement Policy.
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|c|c|} 
+\hline
+\begin{tabular}[c]{@{}c@{}}\textbf{Address}\\\textbf{(Binary)}~\end{tabular} & \textbf{Tag Value} & \begin{tabular}[c]{@{}c@{}}\textbf{Set Index}\\\textbf{Bit}~\end{tabular} & \textbf{Set Entry Bit} & \textbf{Hit/Miss}   \\ 
+\hline
+10010011                                                                     & 4                  & 1                                                                         & 0                      & Miss                \\ 
+\hline
+10010010                                                                     & 4                  & 1                                                                         & 0                      & Hit                 \\ 
+\hline
+10010111                                                                     & 4                  & 1                                                                         & 0                      & Hit                 \\ 
+\hline
+10010101                                                                     & 4                  & 1                                                                         & 0                      & Hit                 \\ 
+\hline
+01110001                                                                     & 3                  & 1                                                                         & 1                      & Miss                \\ 
+\hline
+10110000                                                                     & 5                  & 1                                                                         & 2                      & Miss                \\ 
+\hline
+01011000                                                                     & 2                  & 1                                                                         & 2                      & Miss                \\ 
+\hline
+01010101                                                                     & 2                  & 1                                                                         & 3                      & Hit                 \\ 
+\hline
+10110011                                                                     & 5                  & 1                                                                         & 2                      & Hit                 \\ 
+\hline
+01110011                                                                     & 6                  & 1                                                                         & 0                      & Miss                \\ 
+\hline
+10010101                                                                     & 4                  & 1                                                                         & 1                      & Hit                 \\
+\hline
+\end{tabular}
+\caption{LFU Replacement Policy}
+\end{table}
+
+From Table 5 and Table 6 we can see that there are \textbf{5 hits} out of 11 cases \& \textbf{6 hits} out of 11 cases for LRU \& LFU respectively. So, LFU performs better than LRU.
+%----------------------------------------------------------------
+\section{}
+
+In the Fully Associative Cache, we first try to find all the dependencies of variables and then check the cache.
+
+We are given byte-addressable, direct-mapped cache of size 128 B. So, that translates as follows:
+\begin{equation*}
+    Cache \, Size = 2^{7} \, bytes
+\end{equation*}
+Next, we are given information about Line Size (16 bytes) as follows:
+\begin{equation*}
+    Line \, Size = 2^4 \, bytes
+\end{equation*}
+Let us say that number of Address bits is 8. Hence Offset will be of 4 bits. We calculate the number of sets in the cache as follows:
+\begin{equation*}
+    Index = \frac{Blocks}{Cache \, Line}
+\end{equation*}
+or,
+\begin{equation*}
+    Index \, Bits = \frac{2^{7}}{2^4} = 2^3 = 8
+\end{equation*}
+So, Index will be of 3 bits.
+	
+So, finally tag bits become as follows:
+\begin{equation*}
+    Tag Bits = Address \, Bits - Index \, Bits
+\end{equation*}
+or,
+\begin{equation*}
+    Tag \, Bits = 8 - 4 = 4
+\end{equation*}
+
+\subsection{LRU performing better than LFU}
+Table 7 shows where LRU is used as Replacement Policy.
+
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|c|} 
+\hline
+\begin{tabular}[c]{@{}c@{}}\textbf{Address}\\\textbf{(Binary)}~\end{tabular} & \textbf{Tag Value} & \textbf{Set Entry Bit} & \textbf{Hit/Miss}   \\ 
+\hline
+01000010                                                                     & 4                  & 0                      & Miss                \\ 
+\hline
+01000100                                                                     & 4                  & 0                      & Hit                 \\ 
+\hline
+01001000                                                                     & 4                  & 0                      & Hit                 \\ 
+\hline
+01010000                                                                     & 5                  & 1                      & Miss                \\ 
+\hline
+00100001                                                                     & 2                  & 2                      & Miss                \\ 
+\hline
+00100011                                                                     & 2                  & 2                      & Hit                 \\ 
+\hline
+00110011                                                                     & 3                  & 3                      & Miss                \\ 
+\hline
+01010100                                                                     & 5                  & 1                      & Hit                 \\ 
+\hline
+01010001                                                                     & 5                  & 1                      & Hit                 \\ 
+\hline
+01110011                                                                     & 6                  & 4                      & Miss                \\ 
+\hline
+00110101                                                                     & 3                  & 3                      & Hit                 \\ 
+\hline
+00010001                                                                     & 1                  & 5                      & Miss                \\ 
+\hline
+00010000                                                                     & 1                  & 5                      & Hit                 \\ 
+\hline
+01110000                                                                     & 7                  & 6                      & Miss                \\ 
+\hline
+01110001                                                                     & 7                  & 6                      & Hit                 \\ 
+\hline
+01110101                                                                     & 7                  & 6                      & Hit                 \\ 
+\hline
+10001000                                                                     & 8                  & 7                      & Miss                \\ 
+\hline
+01110101                                                                     & 6                  & 4                      & Hit                 \\ 
+\hline
+10010101                                                                     & 9                  & 0                      & Miss                \\ 
+\hline
+10001011                                                                     & 8                  & 7                      & Hit                 \\
+\hline
+\end{tabular}
+\caption{LRU Replacement Policy}
+\end{table}
+
+Table 8 shows where LFU is used as Replacement Policy.
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|c|} 
+\hline
+\begin{tabular}[c]{@{}c@{}}\textbf{Address}\\\textbf{(Binary)}~\end{tabular} & \textbf{Tag Value} & \textbf{Set Entry Bit} & \textbf{Hit/Miss}   \\ 
+\hline
+01000010                                                                     & 4                  & 0                      & Miss                \\ 
+\hline
+01000100                                                                     & 4                  & 0                      & Hit                 \\ 
+\hline
+01001000                                                                     & 4                  & 0                      & Hit                 \\ 
+\hline
+01010000                                                                     & 5                  & 1                      & Miss                \\ 
+\hline
+00100001                                                                     & 2                  & 2                      & Miss                \\ 
+\hline
+00100011                                                                     & 2                  & 2                      & Hit                 \\ 
+\hline
+00110011                                                                     & 3                  & 3                      & Miss                \\ 
+\hline
+01010100                                                                     & 5                  & 1                      & Hit                 \\ 
+\hline
+01010001                                                                     & 5                  & 1                      & Hit                 \\ 
+\hline
+01110011                                                                     & 6                  & 4                      & Miss                \\ 
+\hline
+00110101                                                                     & 3                  & 3                      & Hit                 \\ 
+\hline
+00010001                                                                     & 1                  & 5                      & Miss                \\ 
+\hline
+00010000                                                                     & 1                  & 5                      & Hit                 \\ 
+\hline
+01110000                                                                     & 7                  & 6                      & Miss                \\ 
+\hline
+01110001                                                                     & 7                  & 6                      & Hit                 \\ 
+\hline
+01110101                                                                     & 7                  & 6                      & Hit                 \\ 
+\hline
+10001000                                                                     & 8                  & 7                      & Miss                \\ 
+\hline
+01110101                                                                     & 6                  & 4                      & Hit                 \\ 
+\hline
+10010101                                                                     & 9                  & 0                      & Miss                \\ 
+\hline
+10001011                                                                     & 8                  & 7                      & Miss                \\
+\hline
+\end{tabular}
+\caption{LFU Replacement Policy}
+\end{table}
+
+From Table 7 and Table 8 we can see that there are \textbf{12 hits} out of 20 cases \& \textbf{10 hits} out of 20 cases for LRU \& LFU respectively. So, LRU performs better than LFU.
+
+\subsection{LFU performing better than LRU}
+Table 9 shows where LRU is used as Replacement Policy.
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|c|} 
+\hline
+\begin{tabular}[c]{@{}c@{}}\textbf{Address}\\\textbf{(Binary)}~\end{tabular} & \textbf{Tag Value} & \textbf{Set Entry Bit} & \textbf{Hit/Miss}   \\ 
+\hline
+01000010                                                                     & 4                  & 0                      & Miss                \\ 
+\hline
+01000100                                                                     & 4                  & 0                      & Hit                 \\ 
+\hline
+01001000                                                                     & 4                  & 0                      & Hit                 \\ 
+\hline
+01010000                                                                     & 5                  & 1                      & Miss                \\ 
+\hline
+00100001                                                                     & 2                  & 2                      & Miss                \\ 
+\hline
+00100011                                                                     & 2                  & 2                      & Hit                 \\ 
+\hline
+01100011                                                                     & 3                  & 3                      & Miss                \\ 
+\hline
+01010100                                                                     & 5                  & 1                      & Hit                 \\ 
+\hline
+01010001                                                                     & 5                  & 1                      & Hit                 \\ 
+\hline
+01100001                                                                     & 6                  & 4                      & Miss                \\ 
+\hline
+01101001                                                                     & 6                  & 4                      & Hit                 \\ 
+\hline
+01100011                                                                     & 3                  & 3                      & Miss                \\ 
+\hline
+00100101                                                                     & 1                  & 5                      & Hit                 \\ 
+\hline
+00010001                                                                     & 1                  & 5                      & Miss                \\ 
+\hline
+01110000                                                                     & 7                  & 6                      & Hit                 \\ 
+\hline
+01110000                                                                     & 7                  & 6                      & Hit                 \\ 
+\hline
+10000001                                                                     & 8                  & 7                      & Miss                \\ 
+\hline
+01100101                                                                     & 6                  & 4                      & Hit                 \\ 
+\hline
+10011000                                                                     & 9                  & 0                      & Miss                \\ 
+\hline
+01000101                                                                     & 4                  & 2                      & Hit                 \\
+\hline
+\end{tabular}
+\caption{LRU Replacement Policy}
+\end{table}
+
+Table 10 shows where LFU is used as Replacement Policy.
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|c|} 
+\hline
+\begin{tabular}[c]{@{}c@{}}\textbf{Address}\\\textbf{(Binary)}~\end{tabular} & \textbf{Tag Value} & \textbf{Set Entry Bit} & \textbf{Hit/Miss}   \\ 
+\hline
+01000010                                                                     & 4                  & 0                      & Miss                \\ 
+\hline
+01000100                                                                     & 4                  & 0                      & Hit                 \\ 
+\hline
+01001000                                                                     & 4                  & 0                      & Hit                 \\ 
+\hline
+01010000                                                                     & 5                  & 1                      & Miss                \\ 
+\hline
+00100001                                                                     & 2                  & 2                      & Miss                \\ 
+\hline
+00100011                                                                     & 2                  & 2                      & Hit                 \\ 
+\hline
+01100011                                                                     & 3                  & 3                      & Miss                \\ 
+\hline
+01010100                                                                     & 5                  & 1                      & Hit                 \\ 
+\hline
+01010001                                                                     & 5                  & 1                      & Hit                 \\ 
+\hline
+01100001                                                                     & 6                  & 4                      & Miss                 \\ 
+\hline
+01101001                                                                     & 6                  & 4                      & Hit                 \\ 
+\hline
+01100011                                                                     & 3                  & 3                      & Hit                \\ 
+\hline
+00100101                                                                     & 1                  & 5                      & Hit                 \\ 
+\hline
+00010001                                                                     & 1                  & 5                      & Miss                \\ 
+\hline
+01110000                                                                     & 7                  & 6                      & Hit                 \\ 
+\hline
+01110000                                                                     & 7                  & 6                      & Miss                \\ 
+\hline
+10000001                                                                     & 8                  & 7                      & Hit                 \\ 
+\hline
+01100101                                                                     & 6                  & 4                      & Hit                 \\ 
+\hline
+10011000                                                                     & 9                  & 0                      & Miss                \\ 
+\hline
+01000101                                                                     & 4                  & 2                      & Hit                 \\
+\hline
+\end{tabular}
+\caption{LFU Replacement Policy}
+\end{table}
+
+
+From Table 9 and Table 10 we can see that there are \textbf{11 hits} out of 20 cases \& \textbf{12 hits} out of 20 cases for LRU \& LFU respectively. So, LFU performs better than LRU.
+
+%----------------------------------------------------------------
+\section{}
+Given that Cache size is 8 words/blocks and Line Size is given as 2. So, we calculate number of blocks/lines as follows:
+\begin{equation*}
+    Blocks = \frac{Cache \, Size}{Line \, Size}
+\end{equation*}
+or,
+\begin{equation*}
+    Blocks = \frac{8}{2} = 4
+\end{equation*}
+So, Offset is of 1 but and number of blocks of Cache is 4. \\
+
+\textbf{\textit{LRU (Least Recently Used)}}: \\
+Least Recently Used (LRU) discards the least recently used items first. This algorithm requires keeping track of what was used when, which is expensive if one wants to make sure the algorithm always discards the least recently used item.
+
+Reference I took help from to solve this question: \href{http://pages.cs.wisc.edu/~sohi/cs552/Homework/hw4/hw4_sol.html}{Reference 1}, \href{https://acsweb.ucsd.edu/~jkalyana/grinch/ECE30/ece30_files/Study_Problems_9.pdf}{Reference 2}.
+
+Table 11 shows the iterations on how the Cache is being filled in each value entered in iteration.
+
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|c|c|} 
+\hline
+\textbf{Address}  & \textbf{Tag Value} & \begin{tabular}[c]{@{}c@{}}\textbf{Offset}\\\textbf{ (Last Bit)} \end{tabular} & \begin{tabular}[c]{@{}c@{}}\textbf{Cache}\\\textbf{ Block} \end{tabular} & \textbf{Hit/Miss}   \\ 
+\hline
+20                & 10                 & 0                                                                              & 1                                                                        & Miss                \\ 
+\hline
+21                & 10                 & 1                                                                              & 1                                                                        & Hit                 \\ 
+\hline
+22                & 11                 & 0                                                                              & 2                                                                        & Miss                \\ 
+\hline
+23                & 11                 & 1                                                                              & 2                                                                        & Hit                 \\ 
+\hline
+24                & 12                 & 0                                                                              & 3                                                                        & Miss                \\ 
+\hline
+25                & 12                 & 1                                                                              & 3                                                                        & Hit                 \\ 
+\hline
+26                & 13                 & 0                                                                              & 4                                                                        & Miss                \\ 
+\hline
+27                & 13                 & 1                                                                              & 4                                                                        & Hit                 \\ 
+\hline
+28                & 14                 & 0                                                                              & 1 (LRU)                                                                  & Miss                \\ 
+\hline
+29                & 14                 & 1                                                                              & 1                                                                        & Hit                 \\ 
+\hline
+22                & 11                 & 0                                                                              & 2                                                                        & Hit                 \\ 
+\hline
+30                & 15                 & 0                                                                              & 3                                                                        & Miss                \\ 
+\hline
+21                & 10                 & 1                                                                              & 3                                                                        & Miss                \\ 
+\hline
+23                & 11                 & 1                                                                              & 2                                                                        & Hit                 \\ 
+\hline
+31                & 15                 & 1                                                                              & 3                                                                        & Hit                 \\
+\hline
+\end{tabular}
+\caption{Fully Associative Cache - LRU}
+\end{table}
+
+The addresses are given to us. When we remove the last binary bit from the given addresses, we get the offset. Alternatively, just even address will have \textbf{0} a offset and odd address will have \textbf{1} as address. Since we are given that we have 2 lines, we put the data accordingly in the 4 boxes of caches. We see that at Address 28, Cache Line 1 (LRU) was assigned. It is to denote that LRU was implemented from there onward. We then decide Hit/Miss by previous idea only. \\
+
+We see the Hit Rate as follows:
+\begin{equation*}
+    Hit \, Rate = \frac{8}{15} = 0.53
+\end{equation*}
+
+Table 12 shows the Cache data after all the iterations. 
+
+\begin{table}[]
+\begin{center}
+\begin{tabular}{c|c|c|}
+\cline{2-3}
+\textbf{}                                                                            & \multicolumn{2}{c|}{\textbf{Cache Data}}        \\ \hline
+\multicolumn{1}{|c|}{\textbf{\begin{tabular}[c]{@{}c@{}}Cache\\ Block\end{tabular}}} & \textbf{{[}0{]} Index} & \textbf{{[}1{]} Index} \\ \hline
+\multicolumn{1}{|c|}{1}                                                              & 28                     & 29                     \\ \hline
+\multicolumn{1}{|c|}{2}                                                              & 22                     & 23                     \\ \hline
+\multicolumn{1}{|c|}{3}                                                              & 30                     & 31                     \\ \hline
+\multicolumn{1}{|c|}{4}                                                              & 20                     & 21                     \\ \hline
+\end{tabular}
+\caption{Cache Contents - Fully Associative LRU}
+\end{center}
+\end{table}
+%----------------------------------------------------------------
+\section{}
+Given that Cache size is 8 words/blocks and Line Size is given as 2 and each set is with 2 entries. So, we calculate number of blocks/lines as follows:
+\begin{equation*}
+    Blocks = \frac{Cache \, Size}{Line \, Size}
+\end{equation*}
+or,
+\begin{equation*}
+    Blocks = \frac{8}{2 \times 2} = 2
+\end{equation*}
+So, Offset is of 1 but and number of blocks of Cache is 4. \\
+
+Table 13 shows the iterations on how the Cache is being filled in each value entered in iteration.
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|c|c|} 
+\hline
+\textbf{Address}  & \textbf{Tag Value} & \begin{tabular}[c]{@{}c@{}}\textbf{Offset}\\\textbf{ (Last Bit)} \end{tabular} & \begin{tabular}[c]{@{}c@{}}\textbf{Set Entry}\\\textbf{ Bit} \end{tabular} & \textbf{Hit/Miss}   \\ 
+\hline
+20                & 5                  & 0                                                                              & 0                                                                          & Miss                \\ 
+\hline
+21                & 5                  & 1                                                                              & 0                                                                          & Hit                 \\ 
+\hline
+22                & 5                  & 0                                                                              & 0                                                                          & Miss                \\ 
+\hline
+23                & 5                  & 1                                                                              & 0                                                                          & Hit                 \\ 
+\hline
+24                & 6                  & 0                                                                              & 1                                                                          & Miss                \\ 
+\hline
+25                & 6                  & 1                                                                              & 1                                                                          & Hit                 \\ 
+\hline
+26                & 6                  & 0                                                                              & 1                                                                          & Miss                \\ 
+\hline
+27                & 6                  & 1                                                                              & 1                                                                          & Hit                 \\ 
+\hline
+28                & 7                  & 0                                                                              & 0 (LRU)                                                                    & Miss                \\ 
+\hline
+29                & 7                  & 1                                                                              & 0                                                                          & Hit                 \\ 
+\hline
+22                & 5                  & 0                                                                              & 0                                                                          & Hit                 \\ 
+\hline
+30                & 7                  & 0                                                                              & 1                                                                          & Miss                \\ 
+\hline
+21                & 5                  & 1                                                                              & 1                                                                          & Miss                \\ 
+\hline
+23                & 5                  & 1                                                                              & 0                                                                          & Hit                 \\ 
+\hline
+31                & 7                  & 1                                                                              & 1                                                                          & Hit                 \\
+\hline
+\end{tabular}
+\caption{2-way Associative Cache - LRU}
+\end{table}
+
+The addresses are given to us. When we remove the last binary bit from the given addresses, we get the offset. Alternatively, just even address will have \textbf{0} a offset and odd address will have \textbf{1} as address. Since we are given that we have 2 sets here, we put the data accordingly in the 2 sets in each line of caches. We see that at Address 28, Set Entry Bit 0 (LRU) was assigned. It is to denote that LRU was implemented from there onward. We then decide Hit/Miss by previous idea only. \\
+
+We see the Hit Rate as follows:
+\begin{equation*}
+    Hit \, Rate = \frac{8}{15} = 0.53
+\end{equation*}
+
+Table 14 shows the Cache data after all the iterations. 
+
+\begin{table}[]
+\begin{center}
+    
+\begin{tabular}{c|c|c|c|c|}
+\cline{2-5}
+\textbf{}                                                                            & \multicolumn{2}{c|}{\textbf{Set 0}}             & \multicolumn{2}{c|}{\textbf{Set 1}}             \\ \hline
+\multicolumn{1}{|c|}{\textbf{\begin{tabular}[c]{@{}c@{}}Cache\\ Block\end{tabular}}} & \textbf{{[}0{]} Index} & \textbf{{[}1{]} Index} & \textbf{{[}0{]} Index} & \textbf{{[}1{]} Index} \\ \hline
+\multicolumn{1}{|c|}{1}                                                              & 28                     & 29                     & 20                     & 21                     \\ \hline
+\multicolumn{1}{|c|}{2}                                                              & 22                     & 23                     & 30                     & 31                     \\ \hline
+\end{tabular}
+\caption{Cache Contents - 2 Way Associative LRU}
+\end{center}
+\end{table}
+%----------------------------------------------------------------
+\end{document}
